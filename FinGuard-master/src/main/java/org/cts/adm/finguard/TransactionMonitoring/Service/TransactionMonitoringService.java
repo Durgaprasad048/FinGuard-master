@@ -36,12 +36,7 @@ public class TransactionMonitoringService {
 
     public FraudCheckResponse createTransaction(TransactionRequest transactionRequest){
         try {
-            Transaction transaction = buildTransaction(transactionRequest);
-            FraudCheckResponse result = evaluateFraud(transaction);
-            Transaction savedTransaction = transactionMonitoringRepository.save(transaction);
-            result.setTransactionId(savedTransaction.getTransactionId());
-            result.setCreatedAt(savedTransaction.getCreatedAt());
-            return result;
+            return evaluateAndSaveTransaction(transactionRequest);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
@@ -53,8 +48,7 @@ public class TransactionMonitoringService {
     }
 
     public FraudCheckResponse detectFraud(TransactionRequest transactionRequest) {
-        Transaction transaction = buildTransaction(transactionRequest);
-        return evaluateFraud(transaction);
+        return evaluateAndSaveTransaction(transactionRequest);
     }
 
     private Transaction buildTransaction(TransactionRequest transactionRequest) {
@@ -167,6 +161,15 @@ public class TransactionMonitoringService {
         }
 
         return toResponse(transaction, riskScore >= FLAG_THRESHOLD);
+    }
+
+    private FraudCheckResponse evaluateAndSaveTransaction(TransactionRequest transactionRequest) {
+        Transaction transaction = buildTransaction(transactionRequest);
+        FraudCheckResponse result = evaluateFraud(transaction);
+        Transaction savedTransaction = transactionMonitoringRepository.save(transaction);
+        result.setTransactionId(savedTransaction.getTransactionId());
+        result.setCreatedAt(savedTransaction.getCreatedAt());
+        return result;
     }
 
     private FraudCheckResponse toResponse(Transaction transaction, boolean fraudDetected) {
