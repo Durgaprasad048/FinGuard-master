@@ -42,6 +42,12 @@ public class Transaction {
     private TransactionType transactionType;
 
     @Column(nullable = false)
+    private Integer riskScore = 0;
+
+    @Column(length = 500)
+    private String fraudReason;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public TransactionType getTransactionType() {
@@ -50,6 +56,22 @@ public class Transaction {
 
     public void setTransactionType(TransactionType transactionType) {
         this.transactionType = transactionType;
+    }
+
+    public Integer getRiskScore() {
+        return riskScore;
+    }
+
+    public void setRiskScore(Integer riskScore) {
+        this.riskScore = riskScore;
+    }
+
+    public String getFraudReason() {
+        return fraudReason;
+    }
+
+    public void setFraudReason(String fraudReason) {
+        this.fraudReason = fraudReason;
     }
 
     public Long getTransactionId() {
